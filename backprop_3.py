@@ -7,28 +7,28 @@ def nonlin(x,deriv=False):
 	else:
 		return 1/(1+np.exp(-x))
 X = np.array([
-	[0,0,1],
-	[0,1,0],
-	[1,0,1],
-	[1,1,0],
-	[1,0,0],
-	[0,0,0],
-	[1,1,1]
+	[0],
+	[0.5],
+	[1]
 	])
-y = np.array([[1,1,0,0,1,0,1]]).T
+y = np.array([[0,0,1]]).T
 input_size = X.shape[1]
 sample_length = X.shape[0]
 np.random.seed(1)
 
-		#Consider the bias as well
-syn0 = 2*np.random.random((input_size,sample_length)) -1 #Get values between 1 and -1
-syn1 = 2*np.random.random((sample_length,1)) -1 #Get values between 1 and -1
+#Consider the bias as well
+syn0 = 2*np.random.random((input_size, sample_length)) -1 #Get values between 1 and -1
+syn1 = 2*np.random.random((sample_length,1)) - 1 #Get values between 1 and -1
+
 for j in range(0,100000):
 	#Feedforward
+	a = np.round(np.random.random((3,1))*3)/3
+	b = a.T
+
+	X = a
+	y = a
 	bias = np.ones((sample_length,1))
-	# 7x4
 	l0 = X
-	# 7x7
 	l1 = nonlin(np.dot(l0, syn0))
 	l2 = nonlin(np.dot(l1,syn1))
 
@@ -49,4 +49,5 @@ for j in range(0,100000):
 
 
 print("After Training:")
+print(X)
 print(l2)
