@@ -24,13 +24,16 @@ class Point():
 class Traveller():
 	def __init__(self, DNA):
 		self.DNA = DNA #Points in ordered list
-		self.fitness = 0
+		self.dis = 0
 	def fitness(self):
 		distance = 0
 		for i, e in enumerate(self.DNA):
 			distance += e.calc_distance(self.DNA[i-1])
-		self.fitness = distance
+		self.dis = distance
 		return distance
+	def print_travel(self):
+		for p in self.DNA:
+			print(p.x, p.y)
 class Population():
 	def __init__(self, size, mut_rate, points):
 		self.size=size
@@ -51,55 +54,51 @@ class Population():
 		pA = list(A.DNA)
 		pB = list(B.DNA)
 		DNA = []
-		for x in range(len(self.points), 0, -1):
+		for x in range(len(self.points)-1, -1, -1):
 			rand = r.random()
 			if(rand < self.mut_rate):
 				# Get some random point
-				point = points[r.random() * (x-1)]
-				pA.remove(point)
-				pB.remove(point)
-				DNA.append(point)
+				point = points[int(r.random() * (x-1))]
 			elif(rand < (0.5 + self.mut_rate/2)):
 				point = pA[x]
-				pB.remove(point)
-				points.remove(point)
-				DNA.append(point)
 			else:
 				point = pB[x]
-				pA.remove(point)
-				points.remove(point)
-				DNA.append(point)
+			pA.remove(point)
+			pB.remove(point)
+			points.remove(point)
+			DNA.append(point)
 		return tuple(DNA)
 
 	def next_gen(self):
 		if(self.gen == 0):
 			self.pop = []
 			for i in range(self.size):
-				DNA = create_organism()
+				DNA = self.create_organism()
 				self.pop.append(Traveller(DNA))
 		else:
 			for t in self.pop:
 				t.fitness()
-			self.pop.sort(key=lambda x: x.fitness)
+			self.pop.sort(key=lambda x: x.dis)
 			self.pop = self.pop[:int(self.size/2)]
 			pool = []
 			for x in self.pop:
 				# here I may tweak the constant c
-				c = 1 * self.dens
-				print(c)
-				t = int(x.distance*c)
+				c = 10 * self.dens
+				#print(c)
+				t = int(x.dis*c)
+				#print(t)
 				for i in range(t):
 					pool.append(x)
 			for x in range(int(self.size/2), self.size):
 				l = len(pool)
 				A = pool[int(r.random()*l)]
 				B = pool[int(r.random()*l)]
-				C = Traveller(reproduce_organism(A,B))
+				C = Traveller(self.reproduce_organism(A,B))
 				self.pop.append(C)
 
-		print(self.pop[0], self.pop[0].fitness)
-		print(self.gen)
-		print()
+		#print(self.pop[0], self.pop[0].dis)
+		#print(self.gen)
+		#print()
 		self.gen += 1
 
 def largest_distance(points):
@@ -115,9 +114,23 @@ def density(size, d):
 	return size/A
 
 
-p = [Point(0,0), Point(1,1), Point(-1,-1), Point(2,2)]
+p = [ Point(0,0), 
+	  Point(1,1), 
+	  Point(-1,-1), 
+	  Point(2,2), 
+	  Point(-5,10), 
+	  Point(10,10),
+	  Point(-10,10),
+	  Point(-4,3)
+	 ]
 
 pop = Population(10, 0.01, p)
 
 
+pop.next_gen()
+pop.pop[0].print_travel()
+for i in range(100):
+	pop.next_gen()
+	pop.next_gen()
 
+pop.pop[0].print_travel()
