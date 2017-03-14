@@ -7,11 +7,14 @@ DNA=Words
 Fitness=CharsCorrect
 """
 import random as r
-
+# Initiate random seed to get comparable results
 r.seed(1)
 
 class Organism():
-	"""docstring for Breed"""
+	"""These are the individuals of my population, it has a DNA and can calculate its fitness
+		The DNA is a string.
+		The fitness function compares letters with a target string and adds one to that fitness value for each matching character.
+	"""
 	def __init__(self, DNA):
 		self.DNA = DNA
 		self.fitness = 0
@@ -23,6 +26,11 @@ class Organism():
 		return self.fitness
 
 class Population():
+	"""
+		Population object contains all relevant Information:
+		number of individuals, the target value, mutation rate
+	"""
+
 	def __init__(self, n_pop, target, mutation_rate):
 		self.n_pop = n_pop
 		self.mutation_rate = mutation_rate
@@ -30,6 +38,8 @@ class Population():
 		self.population = []
 		self.gen = 0
 	def next_gen(self):
+		""" Will kill half of the population and recombine the DNA of the leftover
+		"""
 		if(self.gen == 0):
 			for i in range(0,self.n_pop):
 				self.population.append(Organism(self.breed_first(len(self.target))))
@@ -52,11 +62,15 @@ class Population():
 				new_DNA = self.breed_new(A,B)
 				new_org = Organism(new_DNA)
 				self.population.append(new_org)
+
+		#Print out the "fittes" aka best matching string
 		print(p.population[0].DNA, p.population[0].fitness)
+		# Print generation number
 		print(p.gen)
 		print()
 		self.gen += 1
 	def breed_new(self, A, B):
+		# return new "child" of A and B
 		DNA = ""
 		for i, c in enumerate(A.DNA):
 			rand = r.random()
@@ -68,6 +82,7 @@ class Population():
 				DNA += characters[int(round(r.random()*(len(characters)-1)))]
 		return DNA
 	def breed_first(self, n):
+		#Return random characters of desired length
 		DNA = ""
 		for i in range(0,n):
 			DNA += characters[int(round(r.random()*(len(characters)-1)))]
@@ -82,5 +97,7 @@ target = "To be or not to be, this is the question."
 mutation_rate = 0.01
 p = Population(100, target, mutation_rate)
 p.next_gen()
+
+# run next_gen until string is matched.
 while p.population[0].DNA != target:
 	p.next_gen()
